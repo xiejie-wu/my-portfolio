@@ -620,6 +620,41 @@
             padding: 40px;
             /* 适当的内边距 */
         }
+
+        /* 确保父容器是弹性布局并允许子元素拉伸 */
+        .case-section {
+            display: flex;
+            /* 使用 flex 替代 grid 可以更精准控制拉伸 */
+            align-items: stretch;
+            /* 关键：强制左右两个子容器等高 */
+            gap: 30px;
+        }
+
+        /* 让专区内部的容器也能充满高度 */
+        .case-info {
+            flex: 1;
+            /* 平分宽度 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 关键：让装载彩色卡片的网格区域自动撑开 */
+        .case-info .module-grid {
+            flex-grow: 1;
+            /* 占据剩余的所有垂直空间 */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 让每一项彩色卡片平分高度 */
+        .case-info .module-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* 文字垂直居中 */
+        }
     </style>
 </head>
 
