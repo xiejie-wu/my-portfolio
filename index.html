@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吴婧 - 项目作品集</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700&family=Inter:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-teal: #0e7c7b;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --dark-bg: #0f172a;
+            --blue: #6495b1;
+            --purple: #c1a478;
+            --orange: #86a697;
+            --rose: #a67272;
+            --slate: #64638b;
+            --green: #829c82;
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* 动画基调 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 导航栏 */
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(241, 245, 249, 0.85);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            margin-left: 30px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary-teal);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover,
+        .nav-links a.nav-active {
+            color: var(--primary-teal);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.nav-active::after {
+            width: 100%;
+        }
+
+        /* 标题与通项 */
+        .section {
+            margin-top: 100px;
+        }
+
+        section[id] {
+            scroll-margin-top: 100px;
+        }
+
+        .main-title {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            color: var(--dark-bg);
+        }
+
+        .sub-section-title {
+            font-size: 2rem;
+            margin: 40px 0 20px;
+            border-left: 6px solid var(--primary-teal);
+            padding-left: 20px;
+        }
+
+        /* 英雄区 */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: -2px;
+            line-height: 1.1;
+        }
+
+        .hero h1 span {
+            color: var(--primary-teal);
+            background: linear-gradient(120deg, var(--primary-teal), #2dd4bf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 30px 0;
+        }
+
+        .tag-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 8px 24px;
+            border: 1.5px solid var(--primary-teal);
+            border-radius: 50px;
+            color: var(--primary-teal);
+            font-weight: 500;
+        }
+
+        .tag:hover {
+            background: var(--primary-teal);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* 容器基类 */
+        .project-super-card,
+        .impact-card,
+        .ai-section {
+            background: var(--card-bg);
+            border-radius: 40px;
+            padding: 60px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+            margin-bottom: 80px;
+        }
+
+        /* 指标网格 */
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            text-align: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .impact-item {
+            background: var(--bg-color);
+            padding: 25px;
+            border-radius: 20px;
+        }
+
+        .impact-item span {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            margin-bottom: 5px;
+        }
+
+        /* 项目成就网格 */
+        .project-adaptive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .project-card-row {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 280px;
+        }
+
+        .project-card-row:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(14, 124, 123, 0.1);
+            border-color: rgba(14, 124, 123, 0.2);
+        }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-date-row {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .card-badge-row {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            background: rgba(14, 124, 123, 0.08);
+            color: var(--primary-teal);
+            border-radius: 50px;
+            font-weight: 700;
+        }
+
+        .card-badge-row.highlight {
+            background: rgba(142, 142, 168, 0.1);
+            color: var(--purple);
+        }
+
+        .card-stats-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .stat-item-row {
+            font-size: 0.8rem;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+
+        .stat-item-row strong {
+            color: var(--primary-teal);
+        }
+
+        /* 选项卡面板内容 */
+        .tab-container {
+            display: flex;
+            background: #e2e8f0;
+            padding: 5px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            border: none;
+            padding: 12px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            background: transparent;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--primary-teal);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-pane {
+            display: none;
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .case-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .module-item {
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .module-item strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .mod-orange {
+            background: var(--orange);
+        }
+
+        .mod-teal {
+            background: var(--primary-teal);
+        }
+
+        .mod-blue {
+            background: var(--blue);
+        }
+
+        .mod-purple {
+            background: var(--purple);
+        }
+
+        .mod-rose {
+            background: var(--rose);
+        }
+
+        .mod-slate {
+            background: var(--slate);
+        }
+
+        .mod-green {
+            background: var(--green);
+        }
+
+        .case-visual {
+            background: #f8fafc;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 25px;
+            margin: 50px 0;
+        }
+
+        .chart-box {
+            height: 400px;
+            border: 1px solid #f1f5f9;
+            border-radius: 20px;
+            padding: 20px;
+            background: #fff;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-img-box {
+            height: 160px;
+            background: #fff;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* 时间轴与 AI 特效 */
+        .time-item {
+            border-left: 4px solid var(--primary-teal);
+            padding-left: 30px;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .time-item::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(14, 124, 123, 0.1);
+        }
+
+        .ai-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-section::after {
+            content: "";
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+            animation: pulse 8s infinite alternate;
+        }
+
+        /* 图片预览 */
+        #imageViewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            cursor: zoom-out;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        #fullImage {
+            max-width: 90%;
+            max-height: 90%;
+            transform: scale(0.9);
+            transition: var(--transition);
+        }
+
+        #imageViewer.active #fullImage {
+            transform: scale(1);
+        }
+
+        @keyframes pulse {
+            from {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+
+            to {
+                opacity: 0.8;
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 968px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .case-section,
+            .chart-row,
+            .feature-grid,
+            .impact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ai-section {
+                padding: 40px 30px;
+            }
+        }
+
+        /* 横向时间轴容器 */
+        .horizontal-timeline {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        /* 单个步骤块 */
+        .step-item {
+            flex: 1;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .step-item:hover {
+            background: #fff;
+            border-color: var(--primary-teal);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(14, 124, 123, 0.05);
+        }
+
+        .step-date {
+            font-weight: 700;
+            color: var(--primary-teal);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .step-content p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* 箭头样式 */
+        .step-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+            /* 匹配内容块的大致高度 */
+            color: var(--primary-teal);
+            opacity: 0.5;
+        }
+
+        .step-arrow svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        /* 移动端适配：横向变纵向 */
+        @media (max-width: 768px) {
+            .horizontal-timeline {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .step-arrow {
+                height: auto;
+                padding: 10px 0;
+                transform: rotate(90deg);
+                /* 箭头指向下方 */
+            }
+        }
+
+        .contact-card {
+            min-height: auto !important;
+            /* 撤销 280px 的限制 */
+            gap: 15px;
+            /* 让两行字靠近一点 */
+            justify-content: center;
+            /* 居中排列，不再上下顶格 */
+            padding: 40px;
+            /* 适当的内边距 */
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <div style="font-weight: 700; font-size: 1.4rem; color: var(--primary-teal);">Senior Product Manager</div>
+            <div class="nav-links">
+                <a href="#about" class="nav-active">关于我</a>
+                <a href="#experience">职业历程</a>
+                <a href="#project-list">项目集锦</a>
+                <a href="#portal-special">项目案例</a>
+                <a href="#ai">专业能力</a>
+                <a href="#contact">联系我</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="hero reveal" id="about">
+            <h1>我是 <span>吴婧</span><br>深耕2B领域的产品经理</h1>
+            <p>12年经验积淀，擅长中台架构设计、跨系统整合及数据驱动增长。目前致力于利用 <strong>AI 工具</strong> 优化复杂业务流程。</p>
+            <div class="tag-row">
+                <span class="tag">高级产品经理</span>
+                <span class="tag">PMP 认证 </span>
+                <span class="tag">AI 驱动工作流</span>
+                <span class="tag">架构思维</span>
+            </div>
+        </section>
+        <section class="section reveal" id="experience">
+            <h2 class="main-title">职业历程</h2>
+            <div class="impact-card">
+                <div class="time-item">
+                    <div class="date">2021.08 - 至今</div>
+                    <h4
+                        style="font-size: 1.5rem; color: var(--dark-bg); display: flex; align-items: center; gap: 12px;">
+                        广州亚信技术有限公司
+                        <span class="card-badge-row" style="margin: 0;">高级产品经理</span>
+                        <span class="card-badge-row" style="margin: 0;">2B - CRM</span>
+                    </h4>
+                    <ul style="color: var(--text-light); font-size: 0.95rem; line-height: 1.8; margin-top: 10px;">
+                        <li>主导产品全生命周期管理，涵盖从售前支撑、需求调研设计到交付上线运营的全链路流程。</li>
+                        <li>统筹跨团队协同，协调 UI、研发、测试及外部伙伴，确保产品功能逻辑与验收标准高度一致。</li>
+                        <li>管控发布流程，组织上线验收与灰度测试，并基于数据指标驱动产品迭代优化。</li>
+                    </ul>
+                </div>
+
+                <div class="time-item">
+                    <div class="date">2020.08 - 2021.08</div>
+                    <h4
+                        style="font-size: 1.5rem; color: var(--dark-bg); display: flex; align-items: center; gap: 12px;">
+                        厦门物之联智能科技有限公司
+                        <span class="card-badge-row" style="margin: 0;">产品经理</span>
+                    </h4>
+                    <ul style="color: var(--text-light); font-size: 0.95rem; line-height: 1.8; margin-top: 10px;">
+                        <li>统筹项目全生命周期管理，负责业务需求调研分析与实施方案规划设计。</li>
+                        <li>牵头推动项目落地执行、验收交付，确保项目按期上线并顺利通过验收。</li>
+                    </ul>
+                </div>
+
+                <div class="time-item">
+                    <div class="date">2019.03 - 2020.07</div>
+                    <h4
+                        style="font-size: 1.5rem; color: var(--dark-bg); display: flex; align-items: center; gap: 12px;">
+                        厦门大招科技有限公司
+                        <span class="card-badge-row" style="margin: 0;">产品经理</span>
+                    </h4>
+                    <ul style="color: var(--text-light); font-size: 0.95rem; line-height: 1.8; margin-top: 10px;">
+                        <li>负责业务需求调研、分析及实施方案制定。</li>
+                        <li>主导项目实施与验收等全过程管理工作，保障项目交付质量。</li>
+                    </ul>
+                </div>
+
+                <div class="time-item">
+                    <div class="date">2016.04 - 2019.02</div>
+                    <h4
+                        style="font-size: 1.5rem; color: var(--dark-bg); display: flex; align-items: center; gap: 12px;">
+                        厦门精图信息技术有限公司
+                        <span class="card-badge-row" style="margin: 0;">项目助理</span>
+                    </h4>
+                    <ul style="color: var(--text-light); font-size: 0.95rem; line-height: 1.8; margin-top: 10px;">
+                        <li>协助项目经理进行需求跟进、进度管控及文档整理等支撑工作。</li>
+                    </ul>
+                </div>
+
+                <div class="time-item">
+                    <div class="date">2014.06 - 2016.03</div>
+                    <h4
+                        style="font-size: 1.5rem; color: var(--dark-bg); display: flex; align-items: center; gap: 12px;">
+                        福州星球勘测设计有限公司
+                        <span class="card-badge-row" style="margin: 0;">数据工程师</span>
+                    </h4>
+                    <ul style="color: var(--text-light); font-size: 0.95rem; line-height: 1.8; margin-top: 10px;">
+                        <li>负责地理信息及行业相关数据的采集、处理与工程设计分析工作。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section class="section reveal" id="project-list">
+            <h2 class="main-title">项目集锦</h2>
+            <div class="project-adaptive-grid">
+                <div class="project-card-row">
+                    <div class="card-header-row">
+                        <span class="card-date-row">2024.03 - 至今</span>
+                        <span class="card-badge-row">👍 CMI DT部感谢信</span>
+                    </div>
+                    <h3>统一门户专题</h3>
+                    <p>主导“统一门户+中台能力”方案落地，通过 67 项需求调研解决多门户操作繁琐痛点。</p>
+                    <div class="card-stats-row">
+                        <div class="stat-item-row"><strong>1个</strong> 统一入口</div>
+                        <div class="stat-item-row"><strong>3步</strong> 订购流程</div>
+                    </div>
+                </div>
+
+                <div class="project-card-row">
+                    <div class="card-header-row">
+                        <span class="card-date-row">2023.04 - 2024.02</span>
+                        <span class="card-badge-row">👍 CMHK DT部感谢信</span>
+                    </div>
+                    <h3>政企长流程</h3>
+                    <p>首创通过致远流程驱动，贯穿售前、售中、售后全流程，显著提高销售管理效能。</p>
+                    <div class="card-stats-row">
+                        <div class="stat-item-row"><strong>85%</strong> 线上化</div>
+                        <div class="stat-item-row"><strong>65%</strong> 提速</div>
+                    </div>
+                </div>
+
+                <div class="project-card-row">
+                    <div class="card-header-row">
+                        <span class="card-date-row">2022.04 - 2023.03</span>
+                        <span class="card-badge-row">🏆 劳动竞赛三等奖</span>
+                    </div>
+                    <h3>一站式工作台</h3>
+                    <p>首创销售/交付看板线上化，沉淀商机、订单、合同及收付款查询等多个中台能力。</p>
+                    <div class="card-stats-row">
+                        <div class="stat-item-row"><strong>90%</strong> 日活跃度</div>
+                        <div class="stat-item-row"><strong>5个</strong> 中台模块</div>
+                    </div>
+                </div>
+
+                <div class="project-card-row">
+                    <div class="card-header-row">
+                        <span class="card-date-row">2021.10 - 2023.03</span>
+                        <span class="card-badge-row">三期滚动建设</span>
+                    </div>
+                    <h3>ICT 业务支撑系统</h3>
+                    <p>实现订单/合同/里程碑/收货单一体化管理，全面提升 ICT 应收应付能力与风控合规。</p>
+                    <div class="card-stats-row">
+                        <div class="stat-item-row"><strong>35%↓</strong> 坏账风险</div>
+                        <div class="stat-item-row"><strong>业财一体化</strong> </div>
+                    </div>
+                </div>
+
+
+                <div class="project-card-row">
+                    <div class="card-header-row">
+                        <span class="card-date-row">2021.08 - 至今</span>
+                    </div>
+                    <h3>新业务日常需求</h3>
+                    <p>iBOSS系统CRM相关模块日常功能优化，涵盖不同部门、不同模块需求。</p>
+                    <div class="card-stats-row">
+                        <div class="stat-item-row">完成 <strong>200+</strong> 需求</div>
+                        <div class="stat-item-row"><strong>数十</strong> 模块</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section class="section reveal" id="portal-special">
+
+            <div class="tab-container">
+                <button class="tab-btn active" onclick="switchTab(event, 'portal-case')">统一门户</button>
+                <button class="tab-btn" onclick="switchTab(event, 'cmhk-case')">政企长流程</button>
+                <button class="tab-btn" onclick="switchTab(event, 'workbench-case')">一站式工作台</button>
+                <button class="tab-btn" onclick="switchTab(event, 'ict-case')">ICT业务支撑系统</button>
+            </div>
+
+            <div id="portal-case" class="tab-pane active">
+                <div class="project-super-card">
+                    <p style="color: var(--text-light); font-size: 1.1rem; margin-top: 0;">
+                        <strong>项目概述：</strong>重构权限体系，整合 mCloud、AAN、iSolutions Portal、iConnect Portal
+                        等关键平台，实现从基础服务到生态协同的跨越。
+                    </p>
+                    <div class="impact-grid">
+                        <div class="impact-item"><span>1个</span><label>统一入口</label></div>
+                        <div class="impact-item"><span>3步</span><label>订购流程</label></div>
+                        <div class="impact-item"><span>64项</span><label>业务需求</label></div>
+                        <div class="impact-item"><span>10+</span><label>多系统协同</label></div>
+                    </div>
+                    <div class="sub-section-title">架构设计</div>
+                    <div class="case-section">
+                        <div class="module-grid">
+                            <div class="module-item mod-orange"><strong>卡券中心</strong>优惠券发放核销闭环</div>
+                            <div class="module-item mod-purple"><strong>客户中心</strong>客户配额管理</div>
+                            <div class="module-item mod-rose"><strong>产商品中心</strong>产商品规格特征管理</div>
+                            <div class="module-item mod-blue"><strong>营销中心</strong>订购及工单流程支撑</div>
+                            <div class="module-item mod-slate"><strong>收付中心</strong>多系统账单归集</div>
+                            <div class="module-item mod-green"><strong>通用能力</strong>统一鉴权与消息中台</div>
+                        </div>
+                        <div class="case-visual">
+                            <img src="portal-architecture.jpeg" alt="架构"
+                                style="max-width: 100%; border-radius: 10px; cursor: pointer;"
+                                onclick="showFullImage(this.src)">
+                        </div>
+                    </div>
+                    <div class="sub-section-title">核心功能实现</div>
+
+
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-img-box"><img src="unified-auth-system.png"
+                                    style="max-width: 90%; cursor: pointer;" onclick="showFullImage(this.src)"></div>
+                            <h4>统一权限</h4>
+                            <p>重构内外部账号体系，支撑多系统账号与权限管理</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-img-box"><img src="portal.png" style="max-width: 90%; cursor: pointer;"
+                                    onclick="showFullImage(this.src)"></div>
+                            <h4>产品订购</h4>
+                            <p>覆盖多云配额及优惠券全生命周期管理，支撑客户自主下单订购，构建全自动开通流程。</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-img-box"><img src="service.png" style="max-width: 90%; cursor: pointer;"
+                                    onclick="showFullImage(this.src)"></div>
+                            <h4>自服务</h4>
+                            <p>支撑多产品事实监控与告警，提升监控报障，大幅提升问题排查效率。</p>
+                        </div>
+                    </div>
+                    <div class="chart-row">
+                        <div class="chart-box" id="reqChart"></div>
+                        <div class="chart-box" id="effChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cmhk-case" class="tab-pane">
+                <div class="project-super-card">
+                    <div class="case-header">
+                        <p style="color: var(--text-light); font-size: 1.1rem;">
+                            <strong>项目概述：</strong>
+                            主导重构了政企商机管理的全生命周期链路。通过技术手段打通了“售前方案咨询、售中合同交付、售后运维服务”的闭环数据流，实现了跨部门协同效率的质变，并获得 CMHK DT 部门感谢信肯定。
+                        </p>
+                    </div>
+
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span>100%</span>
+                            <label>商机数字化覆盖</label>
+                        </div>
+                        <div class="impact-item">
+                            <span>0 漏单</span>
+                            <label>端到端管理闭环</label>
+                        </div>
+                        <div class="impact-item">
+                            <span>20% ↑</span>
+                            <label>全流程流转提速</label>
+                        </div>
+                        <div class="impact-item">
+                            <span>感谢信</span>
+                            <label>CMHK DT部高度认可</label>
+                        </div>
+                    </div>
+                    <div class="sub-section-title">核心业务逻辑解构</div>
+
+                    <div
+                        style="background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; min-height: 320px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; overflow: hidden; padding: 20px;">
+                        <div class="case-visual"
+                            style="background: transparent; border: none; padding: 0; width: 100%; display: flex; flex-direction: column; align-items: center;">
+                            <img src="business-process-flow.png" alt="架构"
+                                style="max-width: 100%; height: auto; border-radius: 10px; cursor: pointer; object-fit: contain;"
+                                onclick="showFullImage(this.src)">
+                        </div>
+                    </div>
+
+
+                    <div class="sub-section-title">项目沉淀与价值</div>
+                    <div style="background: var(--bg-color); padding: 30px; border-radius: 20px;">
+                        <ul style="margin: 0; padding-left: 20px; color: var(--text-main); font-size: 0.95rem;">
+                            <li style="margin-bottom: 10px;"><strong>业务流程全域拉通：</strong>
+                                统一两端业务流程与业务规则，实现2B产品受理流程节点标准化、一体化。</li>
+                            <li style="margin-bottom: 10px;"><strong>用户体验全域一致：</strong>
+                                统一视觉体系与交互规范，保障全渠道、全场景用户体验一致性。</li>
+                            <li style="margin-bottom: 10px;"><strong>应用架构全域统一：</strong>
+                                统一前端技术框架、配置中心与服务治理体系，实现架构同源、能力复用。</li>
+                            <li style="margin-bottom: 10px;"><strong>系统集成全域规范：</strong>
+                                统一内外部系统集成方案与接口标准，构建标准化、可扩展集成体系。</li>
+                            <li><strong>企业能力中心对齐：</strong>
+                                对标企业级能力中心规划，实现中心域划分合理、边界统一、口径一致。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="workbench-case" class="tab-pane">
+                <div class="project-super-card">
+                    <div class="case-header">
+                        <p style="color: var(--text-light); font-size: 1.1rem;">
+                            <strong>项目概述：</strong> 针对 2B 业务多系统（iBOSS, ERP, SCM,
+                            DMC…）数据分散、跨平台操作繁琐的痛点，打造集“数据看板、事项提醒、单一入口”于一体的数字化工作环境。该项目获得了<strong>集团劳动竞赛三等奖</strong>，并成为销售与交付团队的核心生产工具。
+                        </p>
+                    </div>
+
+
+                    <div class="impact-grid" style="margin-top: 30px;">
+                        <div class="impact-item">
+                            <span>734人</span>
+                            <label>2025年活跃用户</label>
+                        </div>
+                        <div class="impact-item">
+                            <span>3.9万+</span>
+                            <label>2025年度总点击量</label>
+                        </div>
+                        <div class="impact-item">
+                            <span>21.7%</span>
+                            <label>高频用户占比</label>
+                        </div>
+                        <div class="impact-item">
+                            <span>12项</span>
+                            <label>关键事项自动提醒</label>
+                        </div>
+                    </div>
+
+                    <div class="sub-section-title">系统功能矩阵</div>
+
+                    <div
+                        style="background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; min-height: 320px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; overflow: hidden; padding: 20px;">
+                        <div class="case-visual"
+                            style="background: transparent; border: none; padding: 0; width: 100%; display: flex; flex-direction: column; align-items: center;">
+                            <img src="workbench-arch-final.png" alt="架构"
+                                style="max-width: 100%; height: auto; border-radius: 10px; cursor: pointer; object-fit: contain;"
+                                onclick="showFullImage(this.src)">
+                        </div>
+                    </div>
+
+                    <div class="case-section"
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px;">
+                        <div class="case-info">
+                            <h4
+                                style="color: var(--primary-teal); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                                <span
+                                    style="background: var(--primary-teal); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">1</span>
+                                销售经理专区
+                            </h4>
+                            <div class="module-grid" style="grid-template-columns: 1fr;">
+                                <div class="module-item mod-teal">
+                                    <strong>销售信息图表 (BI)</strong>
+                                    可视化展示 TCV/RCV 达成率、年度趋势分析及全球排名，支持多级数据下钻。
+                                </div>
+                                <div class="module-item mod-blue">
+                                    <strong>欠费监控看板</strong>
+                                    实时监控回款率，按产品、VIP类型、时长分类展示欠费结构，辅助催款决策。
+                                </div>
+                                <div class="module-item mod-purple">
+                                    <strong>工作跟进模块</strong>
+                                    自动抓取待出账订单、审批中合同、到期续约等事项，实现“人找事”到“事找人”的转变。
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="case-info">
+                            <h4
+                                style="color: var(--primary-teal); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                                <span
+                                    style="background: var(--primary-teal); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">2</span>
+                                支撑人员专区
+                            </h4>
+                            <div class="module-grid" style="grid-template-columns: 1fr;">
+                                <div class="module-item mod-orange">
+                                    <strong>SLA 流程指标监控</strong>
+                                    监控方案制定、商务响应、交付实施的及时率，设立超时预警机制。
+                                </div>
+                                <div class="module-item mod-rose">
+                                    <strong>单一入口整合</strong>
+                                    整合资源勘查、工单审批、合同管理等20余项高频菜单，减少系统跳转时间 40% 以上。
+                                </div>
+                                <div class="module-item mod-green">
+                                    <strong>支撑效能分析</strong>
+                                    基于 SPR 工单量及 WLWQ 监控，量化支撑人员工作负载，为资源调度提供依据。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="case-section" style="margin-top: 40px;">
+                        <div class="sub-section-title">核心业务表现</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div id="workbenchChart1"
+                            style="height: 300px; background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 15px;">
+                        </div>
+                        <div id="workbenchChart2"
+                            style="height: 300px; background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 15px;">
+
+                        </div>
+                    </div>
+
+                    <div class="case-section" style="margin-top: 40px;">
+                        <div class="sub-section-title">系统界面预览</div>
+                    </div>
+
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                        <div
+                            style="background: #f8fafc; border-radius: 8px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; overflow: hidden;">
+                            <img src="sales-dashboard.png" alt="销售仪表盘"
+                                style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
+                                onclick="showFullImage(this.src)">
+                        </div>
+
+                        <div
+                            style="background: #f8fafc; border-radius: 8px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; overflow: hidden;">
+                            <img src="task-follow-up-1.png" alt="工作跟进事项"
+                                style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
+                                onclick="showFullImage(this.src)">
+                        </div>
+
+                        <div
+                            style="background: #f8fafc; border-radius: 8px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; overflow: hidden;">
+                            <img src="task-follow-up-2.png" alt="工作跟进事项2"
+                                style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
+                                onclick="showFullImage(this.src)">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="ict-case" class="tab-pane">
+                <div class="project-super-card">
+                    <div class="case-header">
+                        <p style="color: var(--text-light); font-size: 1.1rem;">
+                            <strong>项目概述：</strong> 针对 CMHK ICT
+                            业务模式复杂、结算周期长、坏账风险高等核心痛点，主导建设了涵盖商机、合同、交付、投产一体化的业务支撑系统。项目分三期滚动建设，并最终实现按时交付上线。
+                        </p>
+                    </div>
+
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span>35% ↓</span>
+                            <label>坏账风险降低</label>
+                        </div>
+                        <div class="impact-item">
+                            <span>80%</span>
+                            <label>关键流程线上化</label>
+                        </div>
+                        <div class="impact-item">
+                            <span>3期</span>
+                            <label>按时滚动建设</label>
+                        </div>
+                        <div class="impact-item">
+                            <span>一体化</span>
+                            <label>购销管理</label>
+                        </div>
+                    </div>
+                    <div class="sub-section-title">业务逻辑与架构设计</div>
+                    <div class="case-section"
+                        style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; align-items: start;">
+
+                        <div
+                            style="background: #1e293b; color: #cbd5e1; padding: 30px; border-radius: 20px; font-family: 'Courier New', monospace; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                            <h4 style="color: #fff; margin-top: 0; margin-bottom: 25px;">ICT 项目全生命周期状态机</h4>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; gap: 8px;">
+                                <div
+                                    style="border: 1px solid #475569; padding: 8px; border-radius: 8px; text-align: center; flex: 1;">
+                                    商机报备<br>(Leads)</div>
+                                <span style="color: #475569;">➔</span>
+                                <div
+                                    style="border: 1px solid #0e7c7b; padding: 8px; border-radius: 8px; color: #2dd4bf; text-align: center; flex: 1;">
+                                    方案评审<br>(Solution)</div>
+                                <span style="color: #475569;">➔</span>
+                                <div
+                                    style="border: 1px solid #475569; padding: 8px; border-radius: 8px; text-align: center; flex: 1;">
+                                    合同签署<br>(Contract)</div>
+                                <span style="color: #475569;">➔</span>
+                                <div
+                                    style="border: 1px solid #f59e0b; padding: 8px; border-radius: 8px; color: #f59e0b; text-align: center; flex: 1;">
+                                    里程碑交付<br>(Milestone)</div>
+                                <span style="color: #475569;">➔</span>
+                                <div
+                                    style="border: 1px solid #475569; padding: 8px; border-radius: 8px; text-align: center; flex: 1;">
+                                    财务勾稽<br>(Settlement)</div>
+                            </div>
+                            <p
+                                style="margin-top: 30px; font-size: 0.85rem; border-left: 3px solid #0e7c7b; padding-left: 15px; line-height: 1.6;">
+                                <strong>专家视角：</strong>
+                                通过对 12 种业务状态、24 个触发动作的精细化建模，实现了应收账款（AR）与交付进度（Delivery）的实时水位匹配，坏账预警准确率提升至 98%。
+                            </p>
+                        </div>
+
+                        <div class="case-visual" style="height: 100%; margin: 0; padding: 20px;">
+                            <img src="ict-support-system.png" alt="架构"
+                                style="width: 100%; height: auto; border-radius: 10px; cursor: pointer; object-fit: contain;"
+                                onclick="showFullImage(this.src)">
+                            <span
+                                style="font-size: 0.75rem; color: var(--text-light); margin-top: 10px; display: block;">ICT
+                                业务支撑系统架构全景图</span>
+                        </div>
+                    </div>
+
+                    <div class="sub-section-title">三期滚动建设路径</div>
+                    <div class="horizontal-timeline">
+                        <div class="step-item">
+                            <div class="step-content">
+                                <div class="step-date">第一期：打通正向流程 </div>
+                                <p>实现销售订单、采购订单、收货单、里程碑的标准化录入，建立 ICT 基础数据模型 。</p>
+                            </div>
+                        </div>
+
+                        <div class="step-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-content">
+                                <div class="step-date">第二期：打通反向流程 </div>
+                                <p>打通销售订单变更、采购订单变更、收货单变更、里程碑变更的流程，实现 ICT 动态更新。</p>
+                            </div>
+                        </div>
+
+                        <div class="step-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-content">
+                                <div class="step-date">第三期：功能体验优化 </div>
+                                <p>基于现有系统架构，针对性优化关键功能交互逻辑与视觉体验，降低操作门槛与学习成本。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+        </section>
+        <section class="section reveal" id="ai">
+            <div class="ai-section">
+                <div class="ai-content">
+                    <div class="ai-badge">AI-Empowered PM</div>
+                    <h2 style="font-size: 2.8rem; margin: 15px 0 30px; letter-spacing: -1px; line-height: 1.2;">效率革命：AI
+                        辅助的精益管理</h2>
+
+                    <div class="ai-grid"
+                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin: 40px 0;">
+                        <div class="ai-card"
+                            style="background: rgba(255,255,255,0.05); padding: 30px; border-radius: 24px; border: 1px solid rgba(255, 165, 0, 0.2);">
+                            <div
+                                style="color: var(--orange); font-weight: 700; margin-bottom: 12px; font-size: 0.85rem;">
+                                AUTOMATION</div>
+                            <h4>无人化进度监控</h4>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">
+                                通过飞书多维表格集成 AI 自动化节点，实现需求与研发进度的<strong>实时风险预警</strong>，将项目追踪的被动响应转变为自动提醒。
+                            </p>
+                        </div>
+
+                        <div class="ai-card"
+                            style="background: rgba(255,255,255,0.05); padding: 30px; border-radius: 24px; border: 1px solid rgba(193, 164, 120, 0.2);">
+                            <div
+                                style="color: var(--purple); font-weight: 700; margin-bottom: 12px; font-size: 0.85rem;">
+                                DATA INSIGHT</div>
+                            <h4>AI 辅助数据决策</h4>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">
+                                利用大模型对复杂的 2B 业务报表进行<strong>多维拆解与清洗</strong>，快速提取核心增长点与欠费异常趋势，辅助制定决策方案。
+                            </p>
+                        </div>
+
+                        <div class="ai-card"
+                            style="background: rgba(255,255,255,0.05); padding: 30px; border-radius: 24px; border: 1px solid rgba(100, 149, 177, 0.2);">
+                            <div style="color: var(--blue); font-weight: 700; margin-bottom: 12px; font-size: 0.85rem;">
+                                PRODUCTIVITY</div>
+                            <h4>高阶 Prompt 提效</h4>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">
+                                构建结构化提示词进行<strong>竞品分析与 PRD 框架生成</strong>。本次作品集内容由 AI 深度协作完成，展现了从逻辑构思到代码落地的全过程。
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="ai-quote-box">
+                        <div class="ai-quote-line"></div>
+                        <blockquote class="ai-quote">“AI 不是为了取代产品经理的思考，而是将我从低效的重复劳动中解放出来，去关注更具价值的业务建模与商业闭环。”
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="section reveal" id="contact">
+            <h2 class="main-title">与我联系</h2>
+            <div
+                style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; background: #fff; padding: 40px; border-radius: 30px;">
+                <div>
+                    <h3 style="color: var(--primary-teal);">期待与您共事</h3>
+                    <p style="color: var(--text-light);">12 年的产品深耕让我坚信：好的 2B 产品是在理解业务复杂性后，依然能给出最简单的路径。</p>
+                    <div style="margin-top: 20px;">
+                        <span style="font-weight:700; font-size: 1.2rem;">☎️ 130 6309 2934</span><br>
+                        <span style="font-weight:700; font-size: 1.2rem;">📮 411527393@qq.com</span>
+                    </div>
+                </div>
+                <div
+                    style="display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;">
+                    <div class="case-visual">
+                        <img src="wechat-qr.jpg" alt="架构" style="max-width: 40%; border-radius: 10px; cursor: pointer;"
+                            onclick="showFullImage(this.src)">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <p>© 2026 吴婧 Portfolio | 基于真实项目数据构建，敏感商业数据已做脱敏及模糊化处理</p>
+        <div id="imageViewer" onclick="closeImageViewer()">
+            <img id="fullImage" src="">
+        </div>
+    </div>
+    <script>
+        // 获取 CSS 变量
+        const getCssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+        const chartColors = {
+            teal: getCssVar('--primary-teal'),
+            orange: getCssVar('--orange'),
+            blue: getCssVar('--blue'),
+            green: getCssVar('--green'),
+            purple: getCssVar('--purple'),
+            text: getCssVar('--text-light'),
+            muted: getCssVar('--slate')
+        };
+
+        // 1. 滚动观察器 (模块渐显)
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // 2. 导航栏高亮追踪（修正版）
+        const sections = document.querySelectorAll("section[id], footer[id]");
+        const navLinks = document.querySelectorAll(".nav-links a");
+
+        window.addEventListener("scroll", () => {
+            let current = "";
+
+            // 增加逻辑：判断是否已滚动到页面最底部
+            const isAtBottom = (window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 5;
+
+            if (isAtBottom) {
+                current = "contact"; // 强制指定为联系我模块的 ID
+            } else {
+                sections.forEach((section) => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 150) {
+                        current = section.getAttribute("id");
+                    }
+                });
+            }
+
+            navLinks.forEach((a) => {
+                a.classList.remove("nav-active");
+                // 确保只有匹配到当前 ID 且 ID 不为空时才添加高亮
+                if (current && a.getAttribute("href").includes(current)) {
+                    a.classList.add("nav-active");
+                }
+            });
+        });
+
+        // 3. Tab 切换
+        function switchTab(evt, caseId) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            const targetPane = document.getElementById(caseId);
+            targetPane.classList.add('active');
+            evt.currentTarget.classList.add('active');
+
+            // 💡 新增：当切换到对应的面板时，手动触发图表的大小调整
+            if (caseId === 'portal-case') {
+                setTimeout(() => { reqChart.resize(); effChart.resize(); }, 100);
+            } else if (caseId === 'workbench-case') {
+                // 确保工作台的图表也能正常显示
+                setTimeout(() => { wbChart1.resize(); wbChart2.resize(); }, 100);
+            }
+        }
+
+        // 4. 图片预览逻辑
+        function showFullImage(src) {
+            const viewer = document.getElementById('imageViewer');
+            const img = document.getElementById('fullImage');
+            img.src = src;
+            viewer.style.display = 'flex';
+            setTimeout(() => viewer.classList.add('active'), 10);
+        }
+        function closeImageViewer() {
+            const viewer = document.getElementById('imageViewer');
+            viewer.classList.remove('active');
+            setTimeout(() => viewer.style.display = 'none', 300);
+        }
+
+        // 5. 初始化图表
+        var reqChart = echarts.init(document.getElementById('reqChart'));
+        reqChart.setOption({
+            title: { text: '需求来源分布', left: 'center', textStyle: { fontSize: 14 } },
+            tooltip: { trigger: 'item' },
+            series: [{
+                type: 'pie', radius: ['40%', '60%'],
+                itemStyle: { borderRadius: 8, borderColor: '#fff', borderWidth: 2 },
+                label: { show: true, formatter: '{b}\n{d}%', color: chartColors.text },
+                data: [
+                    { value: 35.94, name: '企业业务部', itemStyle: { color: chartColors.teal } },
+                    { value: 20.31, name: '运营部', itemStyle: { color: chartColors.orange } },
+                    { value: 18.75, name: 'CMIX', itemStyle: { color: chartColors.blue } },
+                    { value: 25, name: '其他', itemStyle: { color: chartColors.muted } }
+                ]
+            }]
+        });
+
+        var effChart = echarts.init(document.getElementById('effChart'));
+        effChart.setOption({
+            title: { text: '体验优化对比', left: 'center', textStyle: { fontSize: 14 } },
+            tooltip: { trigger: 'axis' },
+            xAxis: { type: 'category', data: ['入口整合', '订购步骤'], axisLine: { show: false } },
+            yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+            series: [
+                {
+                    name: '前',
+                    type: 'bar',
+                    data: [6, 15],
+                    // --- 修改部分开始 ---
+                    itemStyle: {
+                        color: chartColors.muted,
+                        borderRadius: [4, 4, 0, 0] // [左上, 右上, 右下, 左下]
+                    },
+                    // --- 修改部分结束 ---
+                    barWidth: '25%'
+                },
+                {
+                    name: '后',
+                    type: 'bar',
+                    data: [1, 3],
+                    // --- 修改部分开始 ---
+                    itemStyle: {
+                        color: chartColors.teal,
+                        borderRadius: [4, 4, 0, 0] // 顶部设置 4px 的圆角
+                    },
+                    // --- 修改部分结束 ---
+                    barWidth: '25%'
+                }
+            ]
+        });
+
+        window.addEventListener('resize', () => { reqChart.resize(); effChart.resize(); });
+        // 工作台专区图表初始化
+        var wbChart1 = echarts.init(document.getElementById('workbenchChart1'));
+        wbChart1.setOption({
+            title: { text: '核心模块访问活跃度 (Top 5)', left: 'center', textStyle: { fontSize: 14, color: '#1e293b' } },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c} ({d}%)' // 悬浮时显示：名称: 数值 (百分比)
+            },
+            series: [{
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: true, // 改为 true，防止标签重叠
+                itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+                label: {
+                    show: true,
+                    position: 'outside', // 标签显示在外部
+                    formatter: '{b}\n{d}%', // 每一块显示：名称 换行 百分比
+                    color: '#64748b',
+                    fontSize: 12
+                },
+                labelLine: {
+                    show: true, // 显示引导线
+                    length: 15,
+                    length2: 10
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: '14',
+                        fontWeight: 'bold',
+                        formatter: '{b}\n{c}' // 高亮时额外显示数值
+                    }
+                },
+                data: [
+                    { value: 12000, name: '销售信息图表', itemStyle: { color: '#0e7c7b' } },
+                    { value: 8500, name: '单一入口', itemStyle: { color: '#728496' } },
+                    { value: 6200, name: '工作跟进事项', itemStyle: { color: '#8e8ea8' } },
+                    { value: 3500, name: '我的客户', itemStyle: { color: '#829c82' } }
+                ]
+            }]
+        });
+        var wbChart2 = echarts.init(document.getElementById('workbenchChart2'));
+        wbChart2.setOption({
+            title: { text: '支撑环节处理时效优化 (小时)', left: 'center', textStyle: { fontSize: 14, color: '#1e293b' } },
+            tooltip: { trigger: 'axis' },
+            legend: { bottom: '0' },
+            xAxis: { type: 'category', data: ['方案制定', '商务响应', '合同审批', '交付实施'] },
+            yAxis: { type: 'value' },
+            series: [
+                {
+                    name: '优化前',
+                    type: 'bar',
+                    data: [24, 12, 48, 72],
+                    itemStyle: {
+                        color: '#cbd5e1',
+                        borderRadius: [4, 4, 0, 0] // 设置 [左上, 右上, 右下, 左下] 的圆角半径
+                    }
+                },
+                {
+                    name: '优化后 (工作台上线)',
+                    type: 'bar',
+                    data: [16, 4, 24, 48],
+                    itemStyle: {
+                        color: '#0e7c7b',
+                        borderRadius: [4, 4, 0, 0] // 同样设置顶部圆角，使视觉更统一
+                    }
+                }
+            ]
+        });
+    </script>
+
+</body>
+
+</html>
